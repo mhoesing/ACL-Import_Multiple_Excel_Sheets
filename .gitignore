@@ -70,13 +70,13 @@ build/
 *.tlh
 *.tmp
 *.tmp_proj
-*.log
 *.vspscc
 *.vssscc
 .builds
 *.pidb
-*.log
 *.scc
+*.LIX
+*.AC
 
 # Visual C++ cache files
 ipch/
