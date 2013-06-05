@@ -1,6 +1,4 @@
 @ACL1000
-^LAYOUT   FileName                           502 D.T,
-WorkBookName   ASCII       1 500    
 ^LAYOUT   ABC_Company_Com_TB_12_31_2011      56 D.T,
 Account_ID     ASCII       1   8    
 Account_Description ASCII       9  30    
@@ -16,8 +14,8 @@ Account_ID     ASCII       1   8
 Account_Description ASCII       9  30    
 Debit_Amt      NUMERIC    39   9 2  
 Credit_Amt     NUMERIC    48   9 2  
-^LAYOUT   SheetList                          502 D.T,
-SheetName      ASCII       1 500    
+^LAYOUT   FileName                           502 D.T,
+WorkBookName   ASCII       1 500    
 ^LOGFILE  Execute_Contest_Excel_Import        "" "Execute_Contest_Excel_Import.LOG"
 [PARENT_FOLDER_ID] 0
 ^BATCH    Import_All_Excel_Sheets_subscpt    
@@ -34,19 +32,47 @@ IMPORT EXCEL TO %v_ACLTable% "%v_projectpath%%v_ACLDataFile%" FROM "%v_FileandPa
 
 ASSIGN v_counter = %v_counter% +1
 OPEN  SheetList
+^REPORT   Default_View                       ABC_Company_Com_TB_12_31_2013    D.T,
+[SKIP] 0
+[TLINES] 0
+[RLINES] 1
+[LINE] 1
+Account_ID           WIDTH 10 PICTURE ""
+[LINE] 1
+Account_Description  PICTURE ""
+[LINE] 1
+Debit_Amt            PICTURE ""
+[LINE] 1
+Credit_Amt           PICTURE ""
+^FORMAT   ABC_Company_Com_TB_12_31_2011      ABC_Company_Com_TB_12_31_2011    "" "ABC_Company_Com_TB_12_31_2011.FIL" 0 ASCII
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] EXCEL "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\ABC_Company_Com_TB_12_31_2011.FIL" FROM "C:\Data\Software\ACL_Analytic_10\Execute_Contest\ABC_Company_Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2011$" KEEPTITLE
+^FORMAT   ABC_Company_Com_TB_12_31_2012      ABC_Company_Com_TB_12_31_2012    "" "ABC_Company_Com_TB_12_31_2012.FIL" 0 ASCII
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] EXCEL "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\ABC_Company_Com_TB_12_31_2012.FIL" FROM "C:\Data\Software\ACL_Analytic_10\Execute_Contest\ABC_Company_Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2012$" KEEPTITLE
+^FORMAT   ABC_Company_Com_TB_12_31_2013      ABC_Company_Com_TB_12_31_2013    "" "ABC_Company_Com_TB_12_31_2013.FIL" 0 ASCII
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] EXCEL "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\ABC_Company_Com_TB_12_31_2013.FIL" FROM "C:\Data\Software\ACL_Analytic_10\Execute_Contest\ABC_Company_Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2013$" KEEPTITLE
+^FORMAT   FileName                           FileName                         "" "FileName.fil" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] DELIMITED "FileName.fil" FROM "C:\ACL_DATA\ACL-Import_Multiple_Excel_Sheets\.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" 
 ^BATCH    Import_All_Excel_Sheets            
 [PARENT_FOLDER_ID] 0
 SET SAFETY OFF
 DELETE ALL OK
-ASSIGN v_powershellpath = "C:\Data\Powershell_Library\"
-ASSIGN v_projectpath    = "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\"
+ASSIGN v_powershellpath = "C:\ACL_DATA\ACL-Import_Multiple_Excel_Sheets\"
+ASSIGN v_projectpath    = "C:\ACL_DATA\ACL-Import_Multiple_Excel_Sheets\"
 DELETE "%v_powershellpath%worksheetlist.txt" OK
 DELETE "%v_powershellpath%filePath.txt"     OK      
 
 PAUSE "Please choose the Excel workbook to IMPORT (note: all columns will be IMPORTed) (and all worksheets will be imported). "
 EXECUTE 'powershell.exe -noprofile -executionpolicy bypass %v_powershellpath%Choose_a_Workbook_and_list_all_sheets.ps1 %v_powershellpath%'
 
-IMPORT DELIMITED TO FileName "FileName.fil" FROM "%v_powershellpath%filePath.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" OPEN
+IMPORT DELIMITED TO FileName "FileName.fil" FROM "%v_projectpath%.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" OPEN
 ASSIGN v_FileandPath   = ALLTRIM(WorkBookName)
 ASSIGN v_PathOnly      = ALLTRIM(SUBSTR("%v_FileandPath%", 1, AT(OCCURS("%v_FileandPath%", "\"), "\", "%v_FileandPath%")))
 ASSIGN v_FilenameOnly  = ALLTRIM(SPLIT("%v_FileandPath%", "%v_PathOnly%", 2))
@@ -62,32 +88,4 @@ DO SCRIPT Import_All_Excel_Sheets_subscpt WHILE v_counter <= v_maxsheets
 
 DISPLAY VARIABLES
 SET SAFETY ON
-^FORMAT   FileName                           FileName                         "" "FileName.fil" 0 ASCII 
-[PARENT_FOLDER_ID] 0
-[RETRIEVE] 0
-[REFRESH] DELIMITED "FileName.fil" FROM "C:\Data\Powershell_Library\filePath.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" 
-^FORMAT   ABC_Company_Com_TB_12_31_2011      ABC_Company_Com_TB_12_31_2011    "" "ABC_Company_Com_TB_12_31_2011.FIL" 0 ASCII 
-[PARENT_FOLDER_ID] 0
-[RETRIEVE] 0
-[REFRESH] EXCEL "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\ABC_Company_Com_TB_12_31_2011.FIL" FROM "C:\Data\Software\ACL_Analytic_10\Execute_Contest\ABC_Company_Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2011$" KEEPTITLE
-^FORMAT   ABC_Company_Com_TB_12_31_2012      ABC_Company_Com_TB_12_31_2012    "" "ABC_Company_Com_TB_12_31_2012.FIL" 0 ASCII 
-[PARENT_FOLDER_ID] 0
-[RETRIEVE] 0
-[REFRESH] EXCEL "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\ABC_Company_Com_TB_12_31_2012.FIL" FROM "C:\Data\Software\ACL_Analytic_10\Execute_Contest\ABC_Company_Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2012$" KEEPTITLE
-^FORMAT   ABC_Company_Com_TB_12_31_2013      ABC_Company_Com_TB_12_31_2013    "" "ABC_Company_Com_TB_12_31_2013.FIL" 0 ASCII 
-[PARENT_FOLDER_ID] 0
-[RETRIEVE] 0
-[REFRESH] EXCEL "C:\Users\MikeA665\Documents\GitHub\ACL\ACL3\ABC_Company_Com_TB_12_31_2013.FIL" FROM "C:\Data\Software\ACL_Analytic_10\Execute_Contest\ABC_Company_Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2013$" KEEPTITLE
-^REPORT   Default_View                       SheetList                        D.T,
-[SKIP] 0
-[TLINES] 0
-[RLINES] 1
-[LINE] 1
-SheetName            PICTURE ""
-^FORMAT   SheetList                          SheetList                        "" "SheetList.fil" 0 ASCII 
-[PARENT_FOLDER_ID] 0
-[LASTVIEW] "Default_View"
-[RETRIEVE] 0
-[REFRESH] DELIMITED "SheetList.fil" FROM "C:\Data\Powershell_Library\worksheetlist.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "SheetName" C AT 1 DEC 0 WID 500 PIC "" AS "" 
-
-^OPEN F "SheetList"
+^OPEN 
