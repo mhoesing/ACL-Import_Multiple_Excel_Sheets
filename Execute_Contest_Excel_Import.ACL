@@ -44,8 +44,7 @@ DELETE "%v_powershellpath%worksheetlist.txt" OK
 DELETE "%v_powershellpath%filePath.txt"     OK      
 
 PAUSE "Please choose the Excel workbook to IMPORT (note: all columns will be IMPORTed) (and all worksheets will be imported). "
-EXECUTE "powershell.exe -noprofile -executionpolicy bypass -noexit %v_powershellpath%Choose_a_Workbook_and_list_all_sheets.ps1 %v_powershellpath%"
-
+EXECUTE 'powershell.exe -noprofile -executionpolicy bypass %v_powershellpath%Choose_a_Workbook_and_list_all_sheets.ps1 %v_powershellpath%'
 
 IMPORT DELIMITED TO FileName "FileName.fil" FROM "%v_powershellpath%filePath.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" OPEN
 ASSIGN v_FileandPath   = ALLTRIM(WorkBookName)
