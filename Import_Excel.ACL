@@ -1,0 +1,158 @@
+@ACL1000
+^LAYOUT   FileName                           502 D.T,
+WorkBookName   ASCII       1 500    
+^LAYOUT   Combined_Trial__TB_12_31_2011_c    56 D.T,
+Account_ID     ASCII       1   8    
+Account_Description ASCII       9  30    
+Debit_Amt      NUMERIC    39   9 2  
+Credit_Amt     NUMERIC    48   9 2  
+^LAYOUT   Combined_Trial__TB_12_31_2012_c    56 D.T,
+Account_ID     ASCII       1   8    
+Account_Description ASCII       9  30    
+Debit_Amt      NUMERIC    39   9 2  
+Credit_Amt     NUMERIC    48   9 2  
+^LAYOUT   Combined_Trial__TB_12_31_2013_c    56 D.T,
+Account_ID     ASCII       1   8    
+Account_Description ASCII       9  30    
+Debit_Amt      NUMERIC    39   9 2  
+Credit_Amt     NUMERIC    48   9 2  
+^LAYOUT   SheetList                          502 D.T,
+SheetName      ASCII       1 500    
+^LOGFILE  Import_Excel                        "" "Import_Excel.LOG"
+[PARENT_FOLDER_ID] 0
+^BATCH    Import_All_Excel_Sheets_PS1        
+[PARENT_FOLDER_ID] 0
+COMMENT ***** Create a generic table containing the list of ACL projects, we have to have a table
+COMMENT ***** open to use the LIST command
+DIR "*.ACL" TO T_FMT SUPPRESS
+OPEN T_FMT
+
+COMMENT ***** Create the powershell script in the specified directory
+LIST UNFORMATTED "# Thanks Ati for the file explorer call and save the results to a text file"           TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 
+LIST UNFORMATTED "Param ( "                                                                              TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "    [Parameter(Mandatory=$true,Position=0)] "                                          TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "    [string]$ps1filepath"                                                              TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ")"                                                                                     TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "cd $ps1filepath"                                                                       TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "Function Get-FileName()"                                                               TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "{"                                                                                     TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+
+
+LIST UNFORMATTED ' [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null' TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED " $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog"                     TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED " $OpenFileDialog.initialDirectory = $initialDirectory"                                 TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ' $OpenFileDialog.filter = "All files (*.*)| *.*"'                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED " $OpenFileDialog.ShowDialog() | Out-Null"                                              TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED " $OpenFileDialog.filename"                                                             TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "} #end function Get-FileName"                                                          TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+
+
+
+LIST UNFORMATTED '$initialDirectory = ".\"'                                                               TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$filePath = Get-FileName"                                                              TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$filePath | out-file filePath.txt -Encoding ASCII"                                     TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "#Thanks to Bryan C O'Connell for the listing worksheets cmdlets logic"                 TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "#  http://bryanoconnell.blogspot.com/p/licenses.html"                                  TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED '$Excel = New-Object -ComObject "Excel.Application" '                                   TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$Excel.Visible = $false                               #Runs Excel in the background. " TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$Excel.DisplayAlerts = $false                         #Supress alert messages. "       TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$Workbook = $Excel.Workbooks.open($filepath) "                                         TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "#Cycle through the Workbook and list each Worksheet"                                   TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "if ($Workbook.Worksheets.Count -gt 0)"                                                 TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED " { "                                                                                   TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "    $Worksheet = $Workbook.Worksheets.item(1) "                                        TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "    foreach($Worksheet in $Workbook.Worksheets) { "                                    TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "     $worksheetname =  $Worksheet.Name | out-file worksheetlist.txt -Encoding ASCII -append" TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "         } "                                                                           TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "} "                                                                                    TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED ""                                                                                      TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$Workbook.Close()"                                                                     TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+LIST UNFORMATTED "$Excel.Quit()"                                                                         TO "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1" IF RECNO() = 1 APPEND
+
+COMMENT ***** Return to the main Import script
+^BATCH    Import_All_Excel_Sheets_subscpt    
+[PARENT_FOLDER_ID] 0
+LOCATE RECORD %v_counter%
+ASSIGN v_workbookname  = SPLIT(ALLTRIM(v_FilenameOnly), "." 1)
+ASSIGN v_worksheetname = ALLTRIM(SheetName)
+IF LENGTH(ALLTRIM("%v_workbookname%")) + LENGTH(ALLTRIM("%v_worksheetname%")) <= 30 ASSIGN v_ACLTable = ALLTRIM("%v_workbookname%") + "_" + ALLTRIM("%v_worksheetname%")
+IF LENGTH(ALLTRIM("%v_workbookname%")) + LENGTH(ALLTRIM("%v_worksheetname%")) >  30 ASSIGN v_ACLTable = SUBSTR(ALLTRIM("%v_workbookname%"), 1, 15) + "_" + SUBSTR(ALLTRIM("%v_worksheetname%"), 1, 15)
+ASSIGN v_ACLDataFile = "%v_ACLTable%" + ".FIL"
+
+IMPORT EXCEL TO %v_ACLTable% "%v_projectpath%%v_ACLDataFile%" FROM "%v_FileandPath%" TABLE "%v_worksheetname%$" CHARMAX 50 KEEPTITLE 
+
+
+ASSIGN v_counter = %v_counter% +1
+OPEN  SheetList
+^BATCH    Import_All_Excel_Sheets            
+[PARENT_FOLDER_ID] 0
+SET SAFETY OFF
+DELETE ALL OK
+CLOSE PRIMARY
+CLOSE SECONDARY
+ASSIGN v_powershellpath = "C:\Powershell_Library\"
+ASSIGN v_projectpath    = "C:\ACL_Data\AN10\"
+DELETE "%v_powershellpath%worksheetlist.txt"                          OK
+DELETE "%v_powershellpath%filePath.txt"                               OK      
+DELETE "%v_powershellpath%Choose_a_Workbook_and_list_all_sheets.PS1"  OK 
+DELETE "T_FMT.FIL"                                                    OK
+DELETE FORMAT T_FMT                                                   OK
+
+DO SCRIPT Import_All_Excel_Sheets_PS1
+
+PAUSE "Please choose the Excel workbook to IMPORT (note: all columns will be IMPORTed) (and all worksheets will be imported). "
+EXECUTE 'powershell.exe -noprofile -executionpolicy bypass %v_powershellpath%Choose_a_Workbook_and_list_all_sheets.ps1 %v_powershellpath%'
+
+IMPORT DELIMITED TO FileName "FileName.fil" FROM "%v_powershellpath%filePath.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" OPEN
+ASSIGN v_FileandPath   = ALLTRIM(WorkBookName)
+ASSIGN v_PathOnly      = ALLTRIM(SUBSTR("%v_FileandPath%", 1, AT(OCCURS("%v_FileandPath%", "\"), "\", "%v_FileandPath%")))
+ASSIGN v_FilenameOnly  = ALLTRIM(SPLIT("%v_FileandPath%", "%v_PathOnly%", 2))
+
+IMPORT DELIMITED TO SheetList "SheetList.fil" FROM "%v_powershellpath%worksheetlist.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "SheetName" C AT 1 DEC 0 WID 500 PIC "" AS "" 
+OPEN SheetList
+COUNT
+ASSIGN v_maxsheets = COUNT1
+ASSIGN v_counter   = 1
+
+DO SCRIPT Import_All_Excel_Sheets_subscpt WHILE v_counter <= v_maxsheets
+
+DELETE "T_FMT.FIL"    OK
+DELETE FORMAT T_FMT   OK
+DISPLAY VARIABLES
+SET SAFETY ON
+^FORMAT   FileName                           FileName                         "" "FileName.fil" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] DELIMITED "FileName.fil" FROM "C:\Powershell_Library\filePath.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "WorkBookName" C AT 1 DEC 0 WID 500 PIC "" AS "" 
+^FORMAT   Combined_Trial__TB_12_31_2011_c    Combined_Trial__TB_12_31_2011_c  "C:\ACL_Data\AN10" "Combined_Trial__TB_12_31_2011.c.FIL" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] EXCEL "C:\ACL_Data\AN10\Combined_Trial__TB_12_31_2011.c.FIL" FROM "C:\ACL_Data\AN10\Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2011.csv$" KEEPTITLE
+^FORMAT   Combined_Trial__TB_12_31_2012_c    Combined_Trial__TB_12_31_2012_c  "C:\ACL_Data\AN10" "Combined_Trial__TB_12_31_2012.c.FIL" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] EXCEL "C:\ACL_Data\AN10\Combined_Trial__TB_12_31_2012.c.FIL" FROM "C:\ACL_Data\AN10\Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2012.csv$" KEEPTITLE
+^FORMAT   Combined_Trial__TB_12_31_2013_c    Combined_Trial__TB_12_31_2013_c  "C:\ACL_Data\AN10" "Combined_Trial__TB_12_31_2013.c.FIL" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[RETRIEVE] 0
+[REFRESH] EXCEL "C:\ACL_Data\AN10\Combined_Trial__TB_12_31_2013.c.FIL" FROM "C:\ACL_Data\AN10\Combined_Trial_Balances.xlsx" TABLE "TB_12_31_2013.csv$" KEEPTITLE
+^REPORT   Default_View                       SheetList                        D.T,
+[SKIP] 0
+[TLINES] 0
+[RLINES] 1
+[LINE] 1
+SheetName            PICTURE ""
+^FORMAT   SheetList                          SheetList                        "" "SheetList.fil" 0 ASCII 
+[PARENT_FOLDER_ID] 0
+[LASTVIEW] "Default_View"
+[RETRIEVE] 0
+[REFRESH] DELIMITED "SheetList.fil" FROM "C:\Powershell_Library\worksheetlist.txt" 0 SEPARATOR "|" QUALIFIER NONE CONSECUTIVE STARTLINE 1 FIELD "SheetName" C AT 1 DEC 0 WID 500 PIC "" AS "" 
+
+^OPEN F "SheetList"
